@@ -1,41 +1,41 @@
 # Virtual Network
 resource "azurerm_virtual_network" "main" {
-  name                = "${var.cluster_name}-vnet"
-  location            = azurerm_resource_group.main.location
-  resource_group_name = azurerm_resource_group.main.name
-  address_space       = ["10.0.0.0/16"]
+  name                = "${var.name}-vnet"
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  address_space       = var.vnet_address_space
 }
 
 # Public Subnet
 resource "azurerm_subnet" "public" {
   name                 = "public-subnet"
-  resource_group_name  = azurerm_resource_group.main.name
+  resource_group_name  = var.resource_group_name
   virtual_network_name = azurerm_virtual_network.main.name
-  address_prefixes     = ["10.0.1.0/24"]
+  address_prefixes     = [var.public_subnet_prefix]
 }
 
 # Private Subnet (for AKS nodes)
 resource "azurerm_subnet" "private" {
   name                 = "private-subnet"
-  resource_group_name  = azurerm_resource_group.main.name
+  resource_group_name  = var.resource_group_name
   virtual_network_name = azurerm_virtual_network.main.name
-  address_prefixes     = ["10.0.2.0/24"]
+  address_prefixes     = [var.private_subnet_prefix]
 }
 
 # Public IP for NAT Gateway
 resource "azurerm_public_ip" "nat" {
-  name                = "${var.cluster_name}-nat-pip"
-  location            = azurerm_resource_group.main.location
-  resource_group_name = azurerm_resource_group.main.name
+  name                = "${var.name}-nat-pip"
+  location            = var.location
+  resource_group_name = var.resource_group_name
   allocation_method   = "Static"
   sku                 = "Standard"
 }
 
 # NAT Gateway
 resource "azurerm_nat_gateway" "main" {
-  name                = "${var.cluster_name}-nat"
-  location            = azurerm_resource_group.main.location
-  resource_group_name = azurerm_resource_group.main.name
+  name                = "${var.name}-nat"
+  location            = var.location
+  resource_group_name = var.resource_group_name
   sku_name            = "Standard"
 }
 
@@ -53,9 +53,9 @@ resource "azurerm_subnet_nat_gateway_association" "private" {
 
 # Network Security Group for Public Subnet
 resource "azurerm_network_security_group" "public" {
-  name                = "${var.cluster_name}-public-nsg"
-  location            = azurerm_resource_group.main.location
-  resource_group_name = azurerm_resource_group.main.name
+  name                = "${var.name}-public-nsg"
+  location            = var.location
+  resource_group_name = var.resource_group_name
 
   security_rule {
     name                       = "AllowHTTP"
@@ -84,9 +84,9 @@ resource "azurerm_network_security_group" "public" {
 
 # Network Security Group for Private Subnet
 resource "azurerm_network_security_group" "private" {
-  name                = "${var.cluster_name}-private-nsg"
-  location            = azurerm_resource_group.main.location
-  resource_group_name = azurerm_resource_group.main.name
+  name                = "${var.name}-private-nsg"
+  location            = var.location
+  resource_group_name = var.resource_group_name
 
   security_rule {
     name                       = "AllowVNetInbound"

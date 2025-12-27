@@ -1,0 +1,6 @@
+subscription_id     = "your-azure-subscription-id"
+location            = "australiacentral"
+resource_group_name = "demo-rg"
+cluster_name        = "demo-aks"
+node_count          = 2
+vm_size             = "Standard_D2s_v6"

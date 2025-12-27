@@ -32,9 +32,3 @@ variable "vm_size" {
   type        = string
   default     = "Standard_D2s_v6"
 }
-
-variable "github_repo_url" {
-  description = "GitHub repository URL for ArgoCD"
-  type        = string
-  default     = "https://github.com/<your-username>/devops_task.git"
-}

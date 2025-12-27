@@ -1,39 +1,47 @@
-terraform {
-  required_version = ">= 1.0"
-
-  required_providers {
-    azurerm = {
-      source  = "hashicorp/azurerm"
-      version = "~> 4.0"
-    }
-    kubernetes = {
-      source  = "hashicorp/kubernetes"
-      version = "~> 3.0"
-    }
-    helm = {
-      source  = "hashicorp/helm"
-      version = "~> 3.0"
-    }
-  }
+# Resource Group
+resource "azurerm_resource_group" "main" {
+  name     = var.resource_group_name
+  location = var.location
 }
 
-provider "azurerm" {
-  features {}
-  subscription_id = var.subscription_id
+# Network Module
+module "network" {
+  source = "./modules/network"
+
+  name                = var.cluster_name
+  location            = azurerm_resource_group.main.location
+  resource_group_name = azurerm_resource_group.main.name
 }
 
-provider "kubernetes" {
-  host                   = azurerm_kubernetes_cluster.main.kube_config[0].host
-  client_certificate     = base64decode(azurerm_kubernetes_cluster.main.kube_config[0].client_certificate)
-  client_key             = base64decode(azurerm_kubernetes_cluster.main.kube_config[0].client_key)
-  cluster_ca_certificate = base64decode(azurerm_kubernetes_cluster.main.kube_config[0].cluster_ca_certificate)
+# AKS Module
+module "aks" {
+  source = "./modules/aks"
+
+  name                = var.cluster_name
+  location            = azurerm_resource_group.main.location
+  resource_group_name = azurerm_resource_group.main.name
+  node_count          = var.node_count
+  vm_size             = var.vm_size
+  subnet_id           = module.network.private_subnet_id
+
+  depends_on = [module.network]
 }
 
-provider "helm" {
-  kubernetes {
-    host                   = azurerm_kubernetes_cluster.main.kube_config[0].host
-    client_certificate     = base64decode(azurerm_kubernetes_cluster.main.kube_config[0].client_certificate)
-    client_key             = base64decode(azurerm_kubernetes_cluster.main.kube_config[0].client_key)
-    cluster_ca_certificate = base64decode(azurerm_kubernetes_cluster.main.kube_config[0].cluster_ca_certificate)
-  }
+# ACR Module
+module "acr" {
+  source = "./modules/acr"
+
+  name                    = replace("${var.cluster_name}acr", "-", "")
+  location                = azurerm_resource_group.main.location
+  resource_group_name     = azurerm_resource_group.main.name
+  aks_kubelet_identity_id = module.aks.kubelet_identity_object_id
+
+  depends_on = [module.aks]
+}
+
+# ArgoCD Module
+module "argocd" {
+  source = "./modules/argocd"
+
+  depends_on = [module.aks]
 }

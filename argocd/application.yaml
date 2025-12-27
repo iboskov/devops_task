@@ -8,7 +8,7 @@ spec:
   
   source:
     # Update this to your GitHub repository URL
-    repoURL: https://github.com/<your-username>/devops_task.git
+    repoURL: https://github.com/iboskov/devops_task.git
     targetRevision: main
     path: helm/demo-app
     helm:
