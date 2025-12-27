@@ -23,8 +23,14 @@ module "aks" {
   node_count          = var.node_count
   vm_size             = var.vm_size
   subnet_id           = module.network.private_subnet_id
+  vnet_id             = module.network.vnet_id
 
   depends_on = [module.network]
+}
+
+data "azurerm_kubernetes_cluster" "aks" {
+  name                = module.aks.cluster_name
+  resource_group_name = azurerm_resource_group.main.name
 }
 
 # ACR Module

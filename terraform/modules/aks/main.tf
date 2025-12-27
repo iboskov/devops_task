@@ -23,3 +23,11 @@ resource "azurerm_kubernetes_cluster" "main" {
     outbound_type  = "userAssignedNATGateway"
   }
 }
+
+# Grant AKS identity Network Contributor on VNet for LoadBalancer creation
+resource "azurerm_role_assignment" "aks_network_contributor" {
+  principal_id                     = azurerm_kubernetes_cluster.main.identity[0].principal_id
+  role_definition_name             = "Network Contributor"
+  scope                            = var.vnet_id
+  skip_service_principal_aad_check = true
+}

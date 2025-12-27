@@ -30,6 +30,11 @@ variable "subnet_id" {
   type        = string
 }
 
+variable "vnet_id" {
+  description = "VNet ID for Network Contributor role assignment"
+  type        = string
+}
+
 variable "service_cidr" {
   description = "Service CIDR for Kubernetes"
   type        = string
