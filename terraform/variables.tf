@@ -21,6 +21,12 @@ variable "cluster_name" {
   default     = "demo-aks"
 }
 
+variable "acr_name" {
+    description = "ACR repo name"
+    type = string
+    default = "ivanb"
+}
+
 variable "node_count" {
   description = "Number of nodes"
   type        = number
