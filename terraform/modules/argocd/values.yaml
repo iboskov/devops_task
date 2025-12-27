@@ -1,6 +1,6 @@
 server:
   service:
-    type: LoadBalancer
+    type: ClusterIP
   resources:
     requests:
       cpu: 100m

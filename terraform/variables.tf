@@ -38,3 +38,9 @@ variable "vm_size" {
   type        = string
   default     = "Standard_D2s_v6"
 }
+
+variable "git_repo_url" {
+  description = "Git repository URL for ArgoCD to sync from"
+  type        = string
+  default     = "https://github.com/iboskov/devops_task.git"
+}

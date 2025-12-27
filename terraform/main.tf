@@ -43,5 +43,7 @@ module "acr" {
 module "argocd" {
   source = "./modules/argocd"
 
+  git_repo_url = var.git_repo_url
+
   depends_on = [module.aks]
 }
