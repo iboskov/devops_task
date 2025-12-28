@@ -6,6 +6,7 @@ import os
 app = Flask(__name__)
 CORS(app)
 
+# Froce a change for CI/CD pipeline test
 # Database configuration
 DB_HOST = os.environ.get('DB_HOST', 'localhost')
 DB_PORT = os.environ.get('DB_PORT', '5432')
