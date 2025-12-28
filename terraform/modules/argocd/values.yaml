@@ -1,6 +1,8 @@
 server:
   service:
-    type: ClusterIP
+    type: LoadBalancer
+    annotations:
+      service.beta.kubernetes.io/azure-dns-label-name: "argocd-ivbosk"
   resources:
     requests:
       cpu: 100m
