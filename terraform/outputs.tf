@@ -24,15 +24,16 @@ output "vnet_id" {
   value       = module.network.vnet_id
 }
 
-output "acr_login_server" {
-  description = "ACR login server URL"
-  value       = module.acr.login_server
-}
+# ACR outputs
+# output "acr_login_server" {
+#   description = "ACR login server URL"
+#   value       = module.acr.login_server
+# }
 
-output "acr_name" {
-  description = "ACR name"
-  value       = module.acr.acr_name
-}
+# output "acr_name" {
+#   description = "ACR name"
+#   value       = module.acr.acr_name
+# }
 
 output "argocd_namespace" {
   description = "ArgoCD namespace"

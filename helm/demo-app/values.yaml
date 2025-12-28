@@ -2,8 +2,10 @@
 frontend:
   replicaCount: 2
   image:
-    repository: nginx
-    tag: "1.25-alpine"
+    repository: ivbosk/demo_frontend
+    # ACR repository:
+    # repository: ivanbacr.azurecr.io/demo-frontend
+    tag: "latest"
     pullPolicy: IfNotPresent
   service:
     type: LoadBalancer
@@ -20,8 +22,10 @@ frontend:
 backend:
   replicaCount: 2
   image:
-    repository: python
-    tag: "3.11-slim"
+    repository: ivbosk/demo_backend
+    # ACR repository:
+    # repository: ivanbacr.azurecr.io/demo-backend
+    tag: "latest"
     pullPolicy: IfNotPresent
   service:
     type: ClusterIP

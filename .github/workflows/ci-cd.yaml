@@ -9,7 +9,11 @@ on:
       - '.github/workflows/**'
 
 env:
-  REGISTRY: ${{ secrets.ACR_LOGIN_SERVER }}
+  # DockerHub registry
+  REGISTRY: docker.io
+  DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+  # ACR registry:
+  # REGISTRY: ${{ secrets.ACR_LOGIN_SERVER }}
 
 jobs:
   detect-changes:
@@ -51,12 +55,20 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Login to Azure Container Registry
+      # DockerHub login
+      - name: Login to DockerHub
         uses: docker/login-action@v3
         with:
-          registry: ${{ secrets.ACR_LOGIN_SERVER }}
-          username: ${{ secrets.ACR_USERNAME }}
-          password: ${{ secrets.ACR_PASSWORD }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # ACR login:
+      # - name: Login to Azure Container Registry
+      #   uses: docker/login-action@v3
+      #   with:
+      #     registry: ${{ secrets.ACR_LOGIN_SERVER }}
+      #     username: ${{ secrets.ACR_USERNAME }}
+      #     password: ${{ secrets.ACR_PASSWORD }}
 
       - name: Build and push Frontend image
         uses: docker/build-push-action@v5
@@ -64,8 +76,12 @@ jobs:
           context: ./app/frontend
           push: true
           tags: |
-            ${{ env.REGISTRY }}/demo-frontend:${{ needs.detect-changes.outputs.sha_short }}
-            ${{ env.REGISTRY }}/demo-frontend:latest
+            ${{ env.DOCKERHUB_USERNAME }}/demo_frontend:${{ needs.detect-changes.outputs.sha_short }}
+            ${{ env.DOCKERHUB_USERNAME }}/demo_frontend:latest
+          # ACR tags:
+          # tags: |
+          #   ${{ secrets.ACR_LOGIN_SERVER }}/demo-frontend:${{ needs.detect-changes.outputs.sha_short }}
+          #   ${{ secrets.ACR_LOGIN_SERVER }}/demo-frontend:latest
           cache-from: type=gha,scope=frontend
           cache-to: type=gha,mode=max,scope=frontend
 
@@ -81,12 +97,20 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Login to Azure Container Registry
+      # DockerHub login
+      - name: Login to DockerHub
         uses: docker/login-action@v3
         with:
-          registry: ${{ secrets.ACR_LOGIN_SERVER }}
-          username: ${{ secrets.ACR_USERNAME }}
-          password: ${{ secrets.ACR_PASSWORD }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # ACR login::
+      # - name: Login to Azure Container Registry
+      #   uses: docker/login-action@v3
+      #   with:
+      #     registry: ${{ secrets.ACR_LOGIN_SERVER }}
+      #     username: ${{ secrets.ACR_USERNAME }}
+      #     password: ${{ secrets.ACR_PASSWORD }}
 
       - name: Build and push Backend image
         uses: docker/build-push-action@v5
@@ -94,8 +118,12 @@ jobs:
           context: ./app/backend
           push: true
           tags: |
-            ${{ env.REGISTRY }}/demo-backend:${{ needs.detect-changes.outputs.sha_short }}
-            ${{ env.REGISTRY }}/demo-backend:latest
+            ${{ env.DOCKERHUB_USERNAME }}/demo_backend:${{ needs.detect-changes.outputs.sha_short }}
+            ${{ env.DOCKERHUB_USERNAME }}/demo_backend:latest
+          # ACR tags:
+          # tags: |
+          #   ${{ secrets.ACR_LOGIN_SERVER }}/demo-backend:${{ needs.detect-changes.outputs.sha_short }}
+          #   ${{ secrets.ACR_LOGIN_SERVER }}/demo-backend:latest
           cache-from: type=gha,scope=backend
           cache-to: type=gha,mode=max,scope=backend
 

@@ -8,7 +8,7 @@ A proof-of-concept for a cloud-native Kubernetes deployment platform using Azure
 
 **Components:**
 - **Azure AKS** - Managed Kubernetes cluster
-- **Azure ACR** - Container registry
+- **DockerHub** - Container registry (ACR support available)
 - **ArgoCD** - GitOps continuous delivery
 - **GitHub Actions** - CI pipeline with selective builds
 - **Helm** - Application packaging
@@ -45,7 +45,7 @@ subscription_id     = "SUBSCRIPTION_ID"
 location            = "australiacentral"
 resource_group_name = "demo-rg"
 cluster_name        = "demo-aks"
-acr_name            = "youruniquename"  # Must be globally unique
+acr_name            = "youruniquename"  # If you are using ACR this must be globally unique
 node_count          = 2
 vm_size             = "Standard_D2s_v3"
 git_repo_url        = "https://github.com/yourusername/devops_task.git"
@@ -160,9 +160,9 @@ helm/demo-app/
 
 | Value | Description | Default |
 |-------|-------------|---------|
-| `frontend.image.repository` | Frontend image | `demo-frontend` |
+| `frontend.image.repository` | Frontend image | `demo_frontend` |
 | `frontend.replicaCount` | Frontend replicas | `2` |
-| `backend.image.repository` | Backend image | `demo-backend` |
+| `backend.image.repository` | Backend image | `demo_backend` |
 | `backend.replicaCount` | Backend replicas | `2` |
 | `postgres.storage` | Database storage size | `1Gi` |
 
@@ -195,8 +195,6 @@ The pipeline (`.github/workflows/ci-cd.yaml`) triggers on push to `main` and bui
 3. **Build Backend** - Only if `app/backend/**` changed
 4. **Update Helm** - Updates image tags in `values.yaml`
 5. **ArgoCD Sync** - Automatically detects changes and deploys
-4. **Update** - Modifies Helm values with new tag
-5. **ArgoCD Sync** - Automatically detects changes and deploys
 
 ### Required GitHub Secrets
 
@@ -204,10 +202,15 @@ Configure these in your repository settings:
 
 | Secret | Description |
 |--------|-------------|
+| `DOCKERHUB_USERNAME` | Your DockerHub username |
+| `DOCKERHUB_TOKEN` | DockerHub access token (not password) |
+
+<!-- ACR secrets (if using Azure Container Registry instead):
 | `AZURE_CREDENTIALS` | Service principal JSON for Azure login |
 | `ACR_LOGIN_SERVER` | ACR URL (e.g., `youracr.azurecr.io`) |
 | `ACR_USERNAME` | ACR admin username |
 | `ACR_PASSWORD` | ACR admin password |
+-->
 
 ### Triggering a Deployment
 
