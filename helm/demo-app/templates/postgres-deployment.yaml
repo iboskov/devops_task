@@ -33,6 +33,8 @@ spec:
                 secretKeyRef:
                   name: {{ .Release.Name }}-postgres-secret
                   key: password
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
           {{- if .Values.postgres.persistence.enabled }}
           volumeMounts:
             - name: postgres-data

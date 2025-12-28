@@ -90,9 +90,12 @@ az aks get-credentials --resource-group demo-rg --name demo-aks
 kubectl get nodes
 ```
 
-### 5. Access ArgoCD
+### 5. Configure and access ArgoCD
 
 ```bash
+# After terraform apply has been executed you can run
+kubectl apply -f ./argocd/application.yaml
+
 # Port forward to ArgoCD - in production this would be through ingress
 kubectl port-forward svc/argocd-server -n argocd 8080:80
 
@@ -203,7 +206,7 @@ Configure these in your repository settings:
 | Secret | Description |
 |--------|-------------|
 | `DOCKERHUB_USERNAME` | Your DockerHub username |
-| `DOCKERHUB_TOKEN` | DockerHub access token (not password) |
+| `DOCKERHUB_TOKEN` | DockerHub access token|
 
 <!-- ACR secrets (if using Azure Container Registry instead):
 | `AZURE_CREDENTIALS` | Service principal JSON for Azure login |
