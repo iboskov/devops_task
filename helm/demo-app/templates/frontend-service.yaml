@@ -4,6 +4,10 @@ metadata:
   name: {{ .Release.Name }}-frontend
   labels:
     {{- include "demo-app.frontend.labels" . | nindent 4 }}
+  {{- if .Values.frontend.service.dnsLabel }}
+  annotations:
+    service.beta.kubernetes.io/azure-dns-label-name: {{ .Values.frontend.service.dnsLabel | quote }}
+  {{- end }}
 spec:
   type: {{ .Values.frontend.service.type }}
   ports:

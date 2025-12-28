@@ -10,6 +10,8 @@ frontend:
   service:
     type: LoadBalancer
     port: 80
+    # Azure DNS label - creates <dnsLabel>.<region>.cloudapp.azure.com
+    dnsLabel: "demo-app-ivbosk"
   resources:
     limits:
       cpu: 100m

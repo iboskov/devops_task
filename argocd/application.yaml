@@ -3,6 +3,8 @@ kind: Application
 metadata:
   name: demo-app
   namespace: argocd
+  annotations:
+    link.argocd.argoproj.io/external-link: "http://demo-app-ivbosk.australiacentral.cloudapp.azure.com"
 spec:
   project: default
   
