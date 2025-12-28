@@ -22,17 +22,22 @@ spec:
             - name: http
               containerPort: 80
               protocol: TCP
+          env:
+            - name: BACKEND_HOST
+              value: "{{ .Release.Name }}-backend"
+            - name: BACKEND_PORT
+              value: "{{ .Values.backend.service.port }}"
           resources:
             {{- toYaml .Values.frontend.resources | nindent 12 }}
           livenessProbe:
             httpGet:
-              path: /
+              path: /health
               port: http
             initialDelaySeconds: 10
             periodSeconds: 10
           readinessProbe:
             httpGet:
-              path: /
+              path: /health
               port: http
             initialDelaySeconds: 5
             periodSeconds: 5

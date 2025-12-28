@@ -1,6 +1,6 @@
 apiVersion: v2
 name: demo-app
-description: A 2-tier demo application with Nginx frontend and Redis backend
+description: A 2-tier application with Nginx frontend, Flask API backend, and PostgreSQL database
 type: application
-version: 0.1.0
+version: 0.2.0
 appVersion: "1.0.0"

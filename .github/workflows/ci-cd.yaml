@@ -6,21 +6,44 @@ on:
       - main
     paths:
       - 'app/**'
-      - 'helm/**'
       - '.github/workflows/**'
 
 env:
   REGISTRY: ${{ secrets.ACR_LOGIN_SERVER }}
-  IMAGE_NAME: demo-app
 
 jobs:
-  build-and-push:
-    name: Build and Push Docker Image
+  detect-changes:
+    name: Detect Changes
     runs-on: ubuntu-latest
-    
     outputs:
-      image_tag: ${{ steps.meta.outputs.version }}
-    
+      frontend: ${{ steps.filter.outputs.frontend }}
+      backend: ${{ steps.filter.outputs.backend }}
+      sha_short: ${{ steps.vars.outputs.sha_short }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Set short SHA
+        id: vars
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+      - name: Detect changed paths
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            frontend:
+              - 'app/frontend/**'
+            backend:
+              - 'app/backend/**'
+
+  build-frontend:
+    name: Build Frontend
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: needs.detect-changes.outputs.frontend == 'true'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -35,44 +58,74 @@ jobs:
           username: ${{ secrets.ACR_USERNAME }}
           password: ${{ secrets.ACR_PASSWORD }}
 
-      - name: Generate image metadata
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: |
-            type=sha,prefix=
-            type=raw,value=latest
-
-      - name: Build and push Docker image
+      - name: Build and push Frontend image
         uses: docker/build-push-action@v5
         with:
-          context: ./app
+          context: ./app/frontend
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          tags: |
+            ${{ env.REGISTRY }}/demo-frontend:${{ needs.detect-changes.outputs.sha_short }}
+            ${{ env.REGISTRY }}/demo-frontend:latest
+          cache-from: type=gha,scope=frontend
+          cache-to: type=gha,mode=max,scope=frontend
+
+  build-backend:
+    name: Build Backend
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: needs.detect-changes.outputs.backend == 'true'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Azure Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ secrets.ACR_LOGIN_SERVER }}
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+
+      - name: Build and push Backend image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./app/backend
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/demo-backend:${{ needs.detect-changes.outputs.sha_short }}
+            ${{ env.REGISTRY }}/demo-backend:latest
+          cache-from: type=gha,scope=backend
+          cache-to: type=gha,mode=max,scope=backend
 
   update-helm-values:
     name: Update Helm Values
     runs-on: ubuntu-latest
-    needs: build-and-push
-    
+    needs: [detect-changes, build-frontend, build-backend]
+    if: always() && (needs.build-frontend.result == 'success' || needs.build-backend.result == 'success')
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Update image tag in Helm values
+      - name: Update Frontend image tag
+        if: needs.build-frontend.result == 'success'
         run: |
-          sed -i "s|tag:.*|tag: \"${{ needs.build-and-push.outputs.image_tag }}\"|" helm/demo-app/values.yaml
-          
+          TAG="${{ needs.detect-changes.outputs.sha_short }}"
+          sed -i '/^frontend:/,/^backend:/{s|tag:.*|tag: "'$TAG'"|;}' helm/demo-app/values.yaml
+
+      - name: Update Backend image tag
+        if: needs.build-backend.result == 'success'
+        run: |
+          TAG="${{ needs.detect-changes.outputs.sha_short }}"
+          sed -i '/^backend:/,/^postgres:/{s|tag:.*|tag: "'$TAG'"|;}' helm/demo-app/values.yaml
+
       - name: Commit and push changes
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add helm/demo-app/values.yaml
-          git diff --staged --quiet || git commit -m "chore: update image tag to ${{ needs.build-and-push.outputs.image_tag }}"
+          git diff --staged --quiet || git commit -m "chore: update image tags to ${{ needs.detect-changes.outputs.sha_short }}"
           git push

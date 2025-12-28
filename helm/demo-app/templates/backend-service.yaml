@@ -8,8 +8,8 @@ spec:
   type: {{ .Values.backend.service.type }}
   ports:
     - port: {{ .Values.backend.service.port }}
-      targetPort: redis
+      targetPort: http
       protocol: TCP
-      name: redis
+      name: http
   selector:
     {{- include "demo-app.backend.selectorLabels" . | nindent 4 }}

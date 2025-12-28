@@ -19,18 +19,34 @@ spec:
           image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}"
           imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
           ports:
-            - name: redis
-              containerPort: 6379
+            - name: http
+              containerPort: 5000
               protocol: TCP
+          env:
+            - name: DB_HOST
+              value: "{{ .Release.Name }}-postgres"
+            - name: DB_PORT
+              value: "5432"
+            - name: DB_NAME
+              value: "{{ .Values.postgres.auth.database }}"
+            - name: DB_USER
+              value: "{{ .Values.postgres.auth.username }}"
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-postgres-secret
+                  key: password
           resources:
             {{- toYaml .Values.backend.resources | nindent 12 }}
           livenessProbe:
-            tcpSocket:
-              port: redis
-            initialDelaySeconds: 10
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 15
             periodSeconds: 10
           readinessProbe:
-            tcpSocket:
-              port: redis
-            initialDelaySeconds: 5
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 10
             periodSeconds: 5

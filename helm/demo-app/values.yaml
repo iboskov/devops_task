@@ -1,4 +1,4 @@
-# Frontend (Nginx)
+# Frontend (Nginx - reverse proxy + static files)
 frontend:
   replicaCount: 2
   image:
@@ -16,20 +16,47 @@ frontend:
       cpu: 50m
       memory: 64Mi
 
-# Backend (Redis)
+# Backend (Flask API)
 backend:
-  replicaCount: 1
+  replicaCount: 2
   image:
-    repository: redis
-    tag: "7-alpine"
+    repository: python
+    tag: "3.11-slim"
     pullPolicy: IfNotPresent
   service:
     type: ClusterIP
-    port: 6379
+    port: 5000
   resources:
     limits:
+      cpu: 200m
+      memory: 256Mi
+    requests:
       cpu: 100m
       memory: 128Mi
+
+# Database (PostgreSQL)
+postgres:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: postgres
+    tag: "15-alpine"
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 5432
+  resources:
+    limits:
+      cpu: 200m
+      memory: 256Mi
     requests:
-      cpu: 50m
-      memory: 64Mi
+      cpu: 100m
+      memory: 128Mi
+  persistence:
+    enabled: true
+    size: 1Gi
+    storageClass: ""
+  auth:
+    database: demo
+    username: postgres
+    password: postgres

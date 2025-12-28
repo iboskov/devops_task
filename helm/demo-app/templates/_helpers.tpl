@@ -25,6 +25,14 @@ app.kubernetes.io/component: backend
 {{- end }}
 
 {{/*
+Postgres labels
+*/}}
+{{- define "demo-app.postgres.labels" -}}
+{{ include "demo-app.labels" . }}
+app.kubernetes.io/component: postgres
+{{- end }}
+
+{{/*
 Frontend selector labels
 */}}
 {{- define "demo-app.frontend.selectorLabels" -}}
@@ -40,4 +48,13 @@ Backend selector labels
 app.kubernetes.io/name: {{ .Chart.Name }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 app.kubernetes.io/component: backend
+{{- end }}
+
+{{/*
+Postgres selector labels
+*/}}
+{{- define "demo-app.postgres.selectorLabels" -}}
+app.kubernetes.io/name: {{ .Chart.Name }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+app.kubernetes.io/component: postgres
 {{- end }}
