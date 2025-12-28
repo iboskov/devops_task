@@ -5,7 +5,7 @@ frontend:
     repository: ivbosk/demo_frontend
     # ACR repository:
     # repository: ivanbacr.azurecr.io/demo-frontend
-    tag: "latest"
+    tag: "576fc59"
     pullPolicy: IfNotPresent
   service:
     type: LoadBalancer
