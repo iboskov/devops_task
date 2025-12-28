@@ -5,7 +5,7 @@ frontend:
     repository: ivbosk/demo_frontend
     # ACR repository:
     # repository: ivanbacr.azurecr.io/demo-frontend
-    tag: "576fc59"
+    tag: "0e3cd73"
     pullPolicy: IfNotPresent
   service:
     type: LoadBalancer
@@ -25,7 +25,7 @@ backend:
     repository: ivbosk/demo_backend
     # ACR repository:
     # repository: ivanbacr.azurecr.io/demo-backend
-    tag: "latest"
+    tag: "0e3cd73"
     pullPolicy: IfNotPresent
   service:
     type: ClusterIP
