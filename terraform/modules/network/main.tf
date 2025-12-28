@@ -14,7 +14,7 @@ resource "azurerm_subnet" "public" {
   address_prefixes     = [var.public_subnet_prefix]
 }
 
-# Private Subnet (for AKS nodes)
+# Private Subnet
 resource "azurerm_subnet" "private" {
   name                 = "private-subnet"
   resource_group_name  = var.resource_group_name

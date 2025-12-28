@@ -4,7 +4,7 @@ A proof-of-concept for a cloud-native Kubernetes deployment platform using Azure
 
 ## Architecture
 
-![Architecture Diagram](docs/architecture.png)
+See [docs/task1-architecture.drawio](docs/task1-architecture.drawio) for the full architecture diagram (open with draw.io).
 
 **Components:**
 - **Azure AKS** - Managed Kubernetes cluster
@@ -47,7 +47,7 @@ resource_group_name = "demo-rg"
 cluster_name        = "demo-aks"
 acr_name            = "youruniquename"  # If you are using ACR this must be globally unique
 node_count          = 2
-vm_size             = "Standard_D2s_v3"
+vm_size             = "Standard_D2s_v6"
 git_repo_url        = "https://github.com/yourusername/devops_task.git"
 ```
 

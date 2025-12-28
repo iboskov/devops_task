@@ -1,8 +1,6 @@
 # Assignment files
 DevOps_Take-Home_Assignment.docx
 docx_extracted/
-SOLUTION.md
-docs/architecture_diagram.png
 
 .terraform/
 .terraform.lock.hcl
