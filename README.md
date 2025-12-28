@@ -4,7 +4,7 @@ A proof-of-concept for a cloud-native Kubernetes deployment platform using Azure
 
 ## Architecture
 
-See [docs/task1-architecture.drawio](docs/task1-architecture.drawio) for the full architecture diagram (open with draw.io).
+See [docs/architecture.pdf](docs/architecture.pdf) for the full architecture diagram (open with draw.io).
 
 **Components:**
 - **Azure AKS** - Managed Kubernetes cluster
