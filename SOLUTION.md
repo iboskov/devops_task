@@ -107,8 +107,8 @@ This document outlines the architecture and design decisions for a cloud-native 
 **Current Rules (Private NSG):**
 ```
 Priority 100: Allow VNet ↔ VNet (all)
-Priority 110: Allow HTTP (80) inbound
-Priority 120: Allow HTTPS (443) inbound  
+Priority 110: Allow HTTP (80) inbound (from the LB)
+Priority 120: Allow HTTPS (443) inbound (from the LB)
 Priority 200: Deny Internet inbound (this should be redundant)
 ```
 
@@ -292,7 +292,9 @@ devops_task/
 │       ├── network/         # VNet, subnets, NAT Gateway, NSGs
 │       ├── aks/             # AKS cluster, managed identity
 │       ├── acr/             # Container registry (commented out)
-│       └── argocd/          # ArgoCD Helm installation + Application CRD
+│       └── argocd/          # ArgoCD Helm installation
+├── argocd/
+│   └── application.yaml     # Application CRD
 ├── app/
 │   ├── frontend/            # Nginx with custom config (Dockerfile)
 │   └── backend/             # Flask API application (Dockerfile)
@@ -305,8 +307,7 @@ devops_task/
 │   └── workflows/
 │       └── ci-cd.yaml       # GitHub Actions pipeline with paths-filter
 ├── docs/
-│   ├── architecture.drawio  # Draw.io architecture diagram
-│   └── task1-architecture.drawio  # Detailed Task 1 diagram
+│   └── architecture.pdf     # Detailed Task 1 diagram
 ├── SOLUTION.md              # This document
 └── README.md                # Deployment instructions
 ```
