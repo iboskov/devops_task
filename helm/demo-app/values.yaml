@@ -27,7 +27,7 @@ backend:
     repository: ivbosk/demo_backend
     # ACR repository:
     # repository: ivanbacr.azurecr.io/demo-backend
-    tag: "0e3cd73"
+    tag: "cd96edd"
     pullPolicy: IfNotPresent
   service:
     type: ClusterIP
